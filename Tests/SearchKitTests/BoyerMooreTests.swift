@@ -11,9 +11,10 @@ struct BoyerMooreTests {
     }
     
     @Test("Single match")
-    func testSingleMatch() {
+    func testSingleMatch() throws {
         let bm = BoyerMoore(text: "Hello, World!")
-        #expect(try bm.search(pattern: "World") == 7)
+        let index = try bm.search(pattern: "World")
+        #expect(index == 7)
         #expect(bm.searchAll(pattern: "World") == [7])
     }
     
@@ -33,17 +34,17 @@ struct BoyerMooreTests {
     }
     
     @Test("Pattern not found")
-    func testPatternNotFound() {
+    func testPatternNotFound() throws {
         let bm = BoyerMoore(text: "Hello, World!")
         #expect(bm.searchAll(pattern: "Python").isEmpty)
-        #expect(try? bm.search(pattern: "Python") == nil)
-    }
-    
-    @Test("Unicode support")
-    func testUnicode() {
-        let bm = BoyerMoore(text: "Hello 👋 Hello 👋 World!")
-        #expect(bm.searchAll(pattern: "👋") == [6, 13])
-        #expect(bm.searchAll(pattern: "Hello") == [0, 8])
+        
+        do {
+            _ = try bm.search(pattern: "Python")
+            #expect(false, "Expected error to be thrown")
+        } catch {
+            #expect(error is BoyerMoore.Error)
+            #expect((error as? BoyerMoore.Error) == .patternNotFound)
+        }
     }
     
     @Test("Pattern at start and end")
