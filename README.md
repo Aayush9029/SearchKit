@@ -1,6 +1,6 @@
 
 <div align="center">
-<img src="https://github.com/user-attachments/assets/b87ca842-14b7-4e33-9fdc-d564b7bb7220" width="256" height="256">
+<img src="https://github.com/user-attachments/assets/b87ca842-14b7-4e33-9fdc-d564b7bb7220" width="128">
     
 
 <h1> SearchKit </h1>
