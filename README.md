@@ -60,13 +60,21 @@ do {
 
 ```swift
 let bm = BoyerMoore(text: "Searching with Boyer-Moore")
+
+// Find first occurrence
 do {
     let index = try bm.search(pattern: "Boyer")
     print("Found at index: \(index)")
 } catch {
     print("Not found")
 }
+
+// Find all occurrences
+let matches = bm.searchAll(pattern: "e")
+print("Found at indices: \(matches)") // [1, 16]
 ```
+
+The Boyer-Moore implementation provides both single-match (`search`) and multi-match (`searchAll`) capabilities, making it versatile for different search requirements. The algorithm maintains its efficiency by using the bad character rule for pattern shifting.
 
 ### Levenshtein Example
 
