@@ -33,7 +33,7 @@ import PackageDescription
 let package = Package(
     name: "YourProject",
     dependencies: [
-        .package(url: "https://github.com/Aayush9029/SearchKit.git", from: "1.0.0")
+        .package(url: "https://github.com/Aayush9029/SearchKit.git", branch: "main")
     ],
     targets: [
         .target(name: "YourTarget", dependencies: ["SearchKit"])
