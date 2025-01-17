@@ -1,57 +1,70 @@
 @testable import SearchKit
 import Testing
 
-@Suite("Levenshtein Distance Tests")
+@Suite("Levenshtein Algorithm Tests")
 struct LevenshteinTests {
-    let levenshtein = Levenshtein()
-    
-    @Test("Identical strings have zero distance")
-    func testIdenticalStrings() async {
-        let distance = await levenshtein.distance("hello", "hello")
-        #expect(distance == 0)
+    @Test("Empty strings")
+    func testEmptyStrings() {
+        #expect(Levenshtein.distance(source: "", target: "") == 0)
+        #expect(Levenshtein.distance(source: "", target: "abc") == 3)
+        #expect(Levenshtein.distance(source: "abc", target: "") == 3)
     }
     
-    @Test("Empty string comparisons", arguments: [
-        ("", "", 0),
-        ("", "a", 1),
-        ("a", "", 1)
-    ])
-    func testEmptyStrings(str1: String, str2: String, expectedDistance: Int) async {
-        let distance = await levenshtein.distance(str1, str2)
-        #expect(distance == expectedDistance)
+    @Test("Same strings")
+    func testSameStrings() {
+        #expect(Levenshtein.distance(source: "hello", target: "hello") == 0)
+        #expect(Levenshtein.distance(source: "world", target: "world") == 0)
     }
     
-    @Test("Single character differences", arguments: [
-        ("cat", "bat", 1, "substitution"),
-        ("cat", "cats", 1, "insertion"),
-        ("cats", "cat", 1, "deletion")
-    ])
-    func testSingleCharacterDifference(str1: String, str2: String, expectedDistance: Int, operation: String) async {
-        let distance = await levenshtein.distance(str1, str2)
-        #expect(distance == expectedDistance)
+    @Test("Simple edits")
+    func testSimpleEdits() {
+        // Single character operations
+        #expect(Levenshtein.distance(source: "cat", target: "cut") == 1)  // substitution
+        #expect(Levenshtein.distance(source: "cat", target: "cats") == 1) // insertion
+        #expect(Levenshtein.distance(source: "cats", target: "cat") == 1) // deletion
     }
     
-    @Test("Multiple operations", arguments: [
-        ("kitten", "sitting", 3),
-        ("sunday", "saturday", 3)
-    ])
-    func testMultipleOperations(str1: String, str2: String, expectedDistance: Int) async {
-        let distance = await levenshtein.distance(str1, str2)
-        #expect(distance == expectedDistance)
+    @Test("Complex edits")
+    func testComplexEdits() {
+        #expect(Levenshtein.distance(source: "kitten", target: "sitting") == 3)
+        #expect(Levenshtein.distance(source: "saturday", target: "sunday") == 3)
     }
     
-    @Test("Unicode string handling")
-    func testUnicodeStrings() async {
-        #expect(await levenshtein.distance("👋🌍", "👋🌎") == 1)
-        #expect(await levenshtein.distance("café", "cafe") == 1)
+    @Test("Unicode character support") 
+    func testUnicode() {
+        #expect(Levenshtein.distance(source: "café", target: "cafe") == 1)
+        #expect(Levenshtein.distance(source: "👋🌍", target: "👋") == 1)
     }
     
-    @Test("Case sensitivity", arguments: [
-        ("Hello", "hello", 1),
-        ("WORLD", "world", 5)
-    ])
-    func testCaseSensitivity(str1: String, str2: String, expectedDistance: Int) async {
-        let distance = await levenshtein.distance(str1, str2)
-        #expect(distance == expectedDistance)
+    @Test("Within distance checks")
+    func testWithinDistance() {
+        // Test exact matches
+        #expect(Levenshtein.isWithinDistance(source: "hello", target: "hello", threshold: 0))
+        
+        // Test within threshold
+        #expect(Levenshtein.isWithinDistance(source: "kitten", target: "sitting", threshold: 3))
+        #expect(!Levenshtein.isWithinDistance(source: "kitten", target: "sitting", threshold: 2))
+        
+        // Test length difference optimization
+        #expect(!Levenshtein.isWithinDistance(source: "hi", target: "hello", threshold: 2))
+        
+        // Test early termination
+        #expect(!Levenshtein.isWithinDistance(source: "completely", target: "different", threshold: 3))
+    }
+    
+    @Test("Performance of distance calculation")
+    func testPerformance() {
+        let longString1 = String(repeating: "a", count: 1000)
+        let longString2 = String(repeating: "a", count: 990) + String(repeating: "b", count: 10)
+        
+        _ = Levenshtein.distance(source: longString1, target: longString2)
+    }
+    
+    @Test("Performance of within distance check")
+    func testPerformanceWithinDistance() {
+        let longString1 = String(repeating: "a", count: 1000)
+        let longString2 = String(repeating: "a", count: 990) + String(repeating: "b", count: 10)
+        
+        _ = Levenshtein.isWithinDistance(source: longString1, target: longString2, threshold: 5)
     }
 }

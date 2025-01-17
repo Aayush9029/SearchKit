@@ -1,4 +1,3 @@
-
 <div align="center">
 <img src="https://github.com/user-attachments/assets/b87ca842-14b7-4e33-9fdc-d564b7bb7220" width="128">
     
@@ -98,4 +97,24 @@ SearchKit is MIT licensed. See [LICENSE](LICENSE) for details.
 ---
 
 Happy Searching! 🚀
+
+---
+
+### Levenshtein Distance
+
+The `Levenshtein` struct provides efficient string similarity measurement using the Levenshtein distance algorithm. It includes two main functionalities:
+
+1. Calculate exact edit distance:
+```swift
+let distance = Levenshtein.distance(source: "kitten", target: "sitting")
+// Returns: 3
+```
+
+2. Check if strings are within a specific edit distance (optimized):
+```swift
+let isClose = Levenshtein.isWithinDistance(source: "hello", target: "helo", threshold: 1)
+// Returns: true
+```
+
+The implementation uses space-optimized dynamic programming, requiring only O(min(m,n)) space where m and n are the lengths of the input strings. The time complexity is O(mn) for exact distance calculation, but the `isWithinDistance` method includes early termination optimizations for better performance when you only need to check if strings are within a certain edit distance.
 
