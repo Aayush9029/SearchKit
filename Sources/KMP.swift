@@ -11,10 +11,12 @@ public struct KMP {
     }
     
     private let textData: [Int]
+    private let text: String
     
     /// Initialize with a `text` in which we will search.
     /// Converts the text to Unicode scalar values for consistent character handling.
     public init(text: String) {
+        self.text = text
         self.textData = text.unicodeScalars.map { Int($0.value) }
     }
     
@@ -75,4 +77,40 @@ public struct KMP {
         
         throw Error.patternNotFound
     }
-} 
+    
+    /// Search for all occurrences of `pattern` in the text using KMP algorithm.
+    /// - Parameter pattern: The string pattern to search for
+    /// - Returns: Array of starting indices where the pattern was found
+    public func searchAll(pattern: String) -> [Int] {
+        let pat = pattern.unicodeScalars.map { Int($0.value) }
+        guard !pat.isEmpty else { return [] }
+        
+        let prefixFunc = computePrefixFunction(pattern: pat)
+        var j = 0  // Number of characters matched
+        var matches: [Int] = []
+        
+        // Iterate through the text
+        for i in 0..<textData.count {
+            // While we have mismatch and j > 0, fall back using the prefix function
+            while j > 0 && pat[j] != textData[i] {
+                j = prefixFunc[j - 1]
+            }
+            
+            // If current characters match, advance j
+            if pat[j] == textData[i] {
+                j += 1
+            }
+            
+            // If we've matched the entire pattern
+            if j == pat.count {
+                let matchIndex = i - pat.count + 1
+                matches.append(matchIndex)
+                
+                // Continue searching for next match (by partially rolling back)
+                j = prefixFunc[j - 1]
+            }
+        }
+        
+        return matches
+    }
+}

@@ -14,18 +14,14 @@ public struct BoyerMoore {
         self.textData = text.unicodeScalars.map { Int($0.value) }
     }
     
-    /// Compute the shift distance for a `char` in the pattern.
-    /// If the char doesn't exist in the pattern, return `pattern.count`.
-    /// Otherwise return `pattern.count - 1 - j`, where `j` is the last
-    /// position of `char` within the pattern.
-    private func delta1(pattern: [Int], char: Int) -> Int {
-        for i in (0 ..< pattern.count).reversed() {
-            if pattern[i] == char {
-                let shift = pattern.count - 1 - i
-                return shift
-            }
+    /// Compute the bad character rule shift table
+    /// Returns a dictionary mapping each character to its rightmost position in the pattern
+    private func makeBadCharTable(_ pattern: [Int]) -> [Int: Int] {
+        var table: [Int: Int] = [:]
+        for i in 0..<pattern.count {
+            table[pattern[i]] = i
         }
-        return pattern.count
+        return table
     }
     
     /// Search for all occurrences of `pattern` in `textData`.
@@ -34,35 +30,42 @@ public struct BoyerMoore {
         let pat = pattern.unicodeScalars.map { Int($0.value) }
         guard !pat.isEmpty else { return [] }
         
-        var matches: [Int] = []
-        var i = pat.count - 1
-        let lastIndex = textData.count
+        let patternLength = pat.count
+        let textLength = textData.count
         
-        while i < lastIndex {
-            var j = pat.count - 1
-            var k = i
+        // Precompute shift tables
+        let badCharTable = makeBadCharTable(pat)
+        
+        var matches: [Int] = []
+        var i = 0  // Position in text
+        
+        // Naive approach for overlapping patterns
+        while i <= textLength - patternLength {
+            var j = patternLength - 1  // Start comparing from the end of pattern
             
-            while j >= 0 && k >= 0 && textData[k] == pat[j] {
-                k -= 1
+            // Compare pattern with text from right to left
+            while j >= 0 && pat[j] == textData[i + j] {
                 j -= 1
             }
             
-            if j < 0 {
-                matches.append(k + 1)
-                // Move to the next character after this match
-                i = k + pat.count + 1
+            if j < 0 {  // Match found
+                matches.append(i)
+                // Move just one position for overlapping matches
+                i += 1
             } else {
-                // Shift by the delta1 distance
-                let shift = delta1(pattern: pat, char: textData[i])
-                i += shift
+                // Using simplified bad character rule
+                let badCharShift: Int
+                if let lastPos = badCharTable[textData[i + j]] {
+                    badCharShift = max(1, j - lastPos)
+                } else {
+                    badCharShift = j + 1
+                }
+                
+                i += badCharShift
             }
         }
         
-        // Convert array indices to String indices
-        return matches.compactMap { startIndex in
-            guard startIndex < text.count else { return nil }
-            return startIndex
-        }
+        return matches
     }
     
     /// Search for `pattern` in `textData`. Returns the start index if found,
@@ -73,4 +76,4 @@ public struct BoyerMoore {
         }
         throw Error.patternNotFound
     }
-} 
+}
