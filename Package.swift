@@ -16,7 +16,6 @@ let package = Package(
             targets: ["SearchKit"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/apple/swift-testing.git", from: "0.6.0"),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -26,8 +25,7 @@ let package = Package(
         .testTarget(
             name: "SearchKitTests",
             dependencies: [
-                "SearchKit",
-                .product(name: "Testing", package: "swift-testing")
+                "SearchKit"
             ]
         ),
     ]
