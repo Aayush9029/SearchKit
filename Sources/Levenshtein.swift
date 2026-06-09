@@ -5,7 +5,7 @@ import Foundation
 ///
 /// Time Complexity: O(mn) where m and n are the lengths of the two strings
 /// Space Complexity: O(min(m,n)) as we only need to store two rows of the matrix
-public struct Levenshtein {
+public struct Levenshtein: Sendable {
     /// Calculate the Levenshtein distance between two strings.
     /// - Parameters:
     ///   - source: The source string

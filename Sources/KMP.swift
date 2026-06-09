@@ -5,8 +5,8 @@ import Foundation
 /// making it especially efficient for patterns with repeating substrings.
 /// Time Complexity: O(n + m) where n is text length and m is pattern length
 /// Space Complexity: O(m) for the prefix function array
-public struct KMP {
-    public enum Error: Swift.Error {
+public struct KMP: Sendable {
+    public enum Error: Swift.Error, Equatable, Sendable {
         case patternNotFound
     }
     

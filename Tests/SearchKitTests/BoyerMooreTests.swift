@@ -38,12 +38,8 @@ struct BoyerMooreTests {
         let bm = BoyerMoore(text: "Hello, World!")
         #expect(bm.searchAll(pattern: "Python").isEmpty)
 
-        do {
-            _ = try bm.search(pattern: "Python")
-            #expect(false, "Expected error to be thrown")
-        } catch {
-            #expect(error is BoyerMoore.Error)
-            #expect((error as? BoyerMoore.Error) == .patternNotFound)
+        #expect(throws: BoyerMoore.Error.patternNotFound) {
+            try bm.search(pattern: "Python")
         }
     }
 

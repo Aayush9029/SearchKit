@@ -26,11 +26,8 @@ struct KMPTests {
         let text = "Hello, World!"
         let kmp = KMP(text: text)
 
-        do {
-            _ = try kmp.search(pattern: "Python")
-        } catch {
-            #expect(error is KMP.Error)
-            #expect((error as? KMP.Error) == .patternNotFound)
+        #expect(throws: KMP.Error.patternNotFound) {
+            try kmp.search(pattern: "Python")
         }
     }
 

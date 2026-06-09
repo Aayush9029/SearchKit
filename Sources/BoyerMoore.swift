@@ -1,7 +1,7 @@
 /// A BoyerMoore struct for exact substring search within a single text (String).
 /// Uses Unicode scalar values for the pattern and text data.
-public struct BoyerMoore {
-    public enum Error: Swift.Error {
+public struct BoyerMoore: Sendable {
+    public enum Error: Swift.Error, Equatable, Sendable {
         case patternNotFound
     }
     
